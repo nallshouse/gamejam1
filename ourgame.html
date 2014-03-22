@@ -26,7 +26,6 @@
         var canvasHeight = 768;
         var PI2 = Math.PI * 2;
 
-
         TurbulenzEngine = WebGLTurbulenzEngine.create({
    			canvas: document.getElementById("canvas")
 		});
@@ -37,10 +36,13 @@
 		  graphicsDevice: graphicsDevice
     	});
 
-		// background color
+
+
+		// Background color
 		var r = 0.5, g = 0.8, b = 0.8, a = 1.0;
 		var bgColor = [r, g, b, a];
 
+		// Sprite object for main character
 		var charSprite = Draw2DSprite.create({
 		    width: 100,
 		    height: 100,
@@ -50,7 +52,7 @@
 		    rotation: 0
 		});
 
-		
+		// Load texture for main character
 		var chartexture = graphicsDevice.createTexture({
 		    src: "sdkassets/textures/crate.jpg",
 		    mipmaps: true,
@@ -64,6 +66,7 @@
 		    }
 		});
 
+		// Main game loop
 		function update() {
     		/* Update code goes here */
     		graphicsDevice.clear(bgColor, 1.0);
@@ -77,6 +80,7 @@
     		graphicsDevice.endFrame();
 		}
 
+		// Important
 		TurbulenzEngine.setInterval(update, 1000 / 60);
     </script>
 </body>
