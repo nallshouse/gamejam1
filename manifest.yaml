@@ -1,0 +1,19 @@
+aspect_ratio: '16:9'
+canvas_main: gamejam.html
+cover_art: ''
+deploy_files:
+- gamejam.html
+- gamejam.html
+deployed: Never
+engine_version: '0.28'
+flash_main: ''
+has_notifications: false
+is_multiplayer: false
+is_temp: false
+mapping_table: ''
+modified: 15:48 | 22/03/2014
+path: C:\Users\allshona\Documents\GitHub\gamejam1
+plugin_main: gamejam.html
+slug: gamejam1-1
+title: GameJam1
+title_logo: ''
