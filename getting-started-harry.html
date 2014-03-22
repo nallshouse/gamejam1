@@ -48,6 +48,19 @@
 		var PI2 = Math.PI * 2;
 		var rotateAngle = Math.PI / 32;
 
+		var texture = graphicsDevice.createTexture({
+		    src: "sdkassets/textures/crate.jpg",
+		    mipmaps: true,
+		    onload: function (texture)
+		    {
+		        if (texture)
+		        {
+		            sprite.setTexture(texture);
+		            sprite.setTextureRectangle([0, 0, texture.width, texture.height]);
+		        }
+		    }
+		});
+
 		function update() {
     		/* Update code goes here */
     		graphicsDevice.clear(bgColor, 1.0);
