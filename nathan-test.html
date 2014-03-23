@@ -1,6 +1,13 @@
 <html>
 <head>
     <title>Turbulenz - Getting Started Guide - API Example</title>
+    <style>
+    	#gamediv {
+
+			text-align:		center;
+			vertical-align:	middle;
+		}
+    </style>
     <!-- Script includes go here -->
     <script src="jslib/debug.js"></script>
 	<script src="jslib/webgl/turbulenzengine.js"></script>
@@ -8,9 +15,18 @@
 	<script src="jslib/draw2d.js"></script>
 </head>
 <body>
-    <canvas id="canvas" width="640px" height="480px"/>
+	<div id="gamediv">
+    	<canvas id="canvas" width="1024px" height="768px"/>
+    </div>
     <script>
         /* Game code goes here */
+
+        // Constants
+        var canvasWidth = 1024;
+        var canvasHeight = 768;
+        var PI2 = Math.PI * 2;
+
+
         TurbulenzEngine = WebGLTurbulenzEngine.create({
    			canvas: document.getElementById("canvas")
 		});
@@ -21,76 +37,97 @@
 		  graphicsDevice: graphicsDevice
     	});
 
-		var r = 1.0, g = 1.0, b = 0.0, a = 1.0;
+		// background color
+		var r = 0.5, g = 0.8, b = 0.8, a = 1.0;
 		var bgColor = [r, g, b, a];
 
-		var x1 = 50;
-		var y1 = 50;
-		var x2 = graphicsDevice.width - 50;
-		var y2 = graphicsDevice.height - 50;
-
-		var rectangle = [x1, y1, x2, y2];
-
-		var drawObject = {
-		    color: [1.0, 0.0, 0.0, 1.0],
-		    destinationRectangle: rectangle
-		};
-
-		var sprite = Draw2DSprite.create({
+		var charSprite = Draw2DSprite.create({
 		    width: 100,
 		    height: 100,
 		    x: graphicsDevice.width / 2,
-		    y: graphicsDevice.height / 2,
+		    y: graphicsDevice.height - 100,
 		    color: [1.0, 1.0, 1.0, 1.0],
-		    rotation: Math.PI / 4
+		    rotation: 0
 		});
 		
-		var texture = graphicsDevice.createTexture({
-			src: "assets/textures/particle_spark.png",
-			mipmaps: true,
-			onload: function (texture)
-			{
-				if (texture)
+		// single coin example
+		var coin = Draw2DSprite.create({
+				width: 15,
+				height: 15,
+				x: graphicsDevice.width / 2,
+				y: graphicsDevice.height - 700,
+				color: [1.0, 1.0, 1.0, 1.0],
+				rotation: 0
+			});
+
+		// create coin objects
+		var coins = new Array();
+		for(var c = 0; c < 10 ; c++) {
+			coins[c].Draw2DSprite.create({
+				width: 15,
+				height: 15,
+				x: graphicsDevice.width / 2,
+				y: graphicsDevice.height - 700,
+				color: [1.0, 1.0, 1.0, 1.0],
+				rotation: 0
+			});
+		}
+
+		var chartexture = graphicsDevice.createTexture({
+		    src: "sdkassets/textures/crate.jpg",
+		    mipmaps: true,
+		    onload: function (texture)
+		    {
+		        if (texture)
+		        {
+		            charSprite.setTexture(texture);
+		            charSprite.setTextureRectangle([0, 0, texture.width, texture.height]);
+		        }
+		    }
+		});
+		
+		// single coin texture example
+		var cointexture = graphicsDevice.createTexture({
+				src: "sdkassets/textures/coin.png",
+				mipmaps: true,
+				onload: function (texture)
 				{
-					sprite.setTexture(texture);
-					sprite.setTextureRectangle([0, 0, texture.width, texture.height]);
+					if (texture)
+					{
+						coins[c].setTexture(texture);
+						coins[c].setTextureRectangle([0, 0, texture.width, texture.height]);
+					}
 				}
-			}
-		});
-		
-		var PI2 = Math.PI * 2;
-		var rotateAngle = Math.PI / 32;
-		
-		var scale = [1, 1];
+			});
+
+		// create coin textures
+		/* for(var c = 0; c < 10 ; c++) {
+			var cointexture = graphicsDevice.createTexture({
+				src: "sdkassets/textures/coin.png",
+				mipmaps: true,
+				onload: function (texture)
+				{
+					if (texture)
+					{
+						coins[c].setTexture(texture);
+						coins[c].setTextureRectangle([0, 0, texture.width, texture.height]);
+					}
+				}
+			});
+		} */
 
 		function update() {
     		/* Update code goes here */
     		graphicsDevice.clear(bgColor, 1.0);
     		/* Rendering code goes here */
 
+			draw2D.begin(); // Additive
+			draw2D.drawSprite(charSprite);
+			draw2D.drawSprite(coin);
+			draw2D.end();
 
-    		b += 0.01;
-			bgColor[2] = b % 1; // Clamp color between 0-1
-			
-			sprite.rotation += rotateAngle;
-			sprite.rotation %= PI2; //Wrap rotation at PI * 2/
-			
-			scale[0] = scale[1] = Math.cos(sprite.rotation) + 2;
-			sprite.setscale(scale);
-			
-			if (graphicsDevice.geginFrame())
-			{
-				
-				draw2D.begin();
-				draw2D.draw(drawObject);
-				draw2D.end();
-				
-				draw2D.begin('additive');
-				draw2D.drawSprite(sprite);
-				draw2D.end();
 
-				graphicsDevice.endFrame();
-			}
+    		graphicsDevice.endFrame();
 		}
 
 		TurbulenzEngine.setInterval(update, 1000 / 60);
