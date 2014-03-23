@@ -50,20 +50,29 @@
 		    rotation: 0
 		});
 		
+		// single coin example
+		var coin = Draw2DSprite.create({
+				width: 15,
+				height: 15,
+				x: graphicsDevice.width / 2,
+				y: graphicsDevice.height - 700,
+				color: [1.0, 1.0, 1.0, 1.0],
+				rotation: 0
+			});
+
 		// create coin objects
-		var coins[10];
-		for (var c in coins) {
+		var coins = new Array();
+		for(var c = 0; c < 10 ; c++) {
 			coins[c].Draw2DSprite.create({
 				width: 15,
 				height: 15,
-				x: graphicsDevice.width - int(rnd(0)*graphicsDevice.width),
+				x: graphicsDevice.width / 2,
 				y: graphicsDevice.height - 700,
 				color: [1.0, 1.0, 1.0, 1.0],
 				rotation: 0
 			});
 		}
 
-		
 		var chartexture = graphicsDevice.createTexture({
 		    src: "sdkassets/textures/crate.jpg",
 		    mipmaps: true,
@@ -77,8 +86,22 @@
 		    }
 		});
 		
-		// create coin texture
-		for (var c in coins) {
+		// single coin texture example
+		var cointexture = graphicsDevice.createTexture({
+				src: "sdkassets/textures/coin.png",
+				mipmaps: true,
+				onload: function (texture)
+				{
+					if (texture)
+					{
+						coins[c].setTexture(texture);
+						coins[c].setTextureRectangle([0, 0, texture.width, texture.height]);
+					}
+				}
+			});
+
+		// create coin textures
+		/* for(var c = 0; c < 10 ; c++) {
 			var cointexture = graphicsDevice.createTexture({
 				src: "sdkassets/textures/coin.png",
 				mipmaps: true,
@@ -91,7 +114,7 @@
 					}
 				}
 			});
-		}
+		} */
 
 		function update() {
     		/* Update code goes here */
