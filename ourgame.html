@@ -41,10 +41,12 @@
 		var r = 0.5, g = 0.8, b = 0.8, a = 1.0;
 		var bgColor = [r, g, b, a];
 
+		// Movement constants
+		var spriteSpeed = 8;
+		var gameSpeed = 60;
 
-		// Controls
-		// var keydownListener = function
-		// var activeKeys = ['LEFT', 'RIGHT'];
+
+		// Controls //////////////////////////////
 
 		var keyMap = {};
 
@@ -64,6 +66,9 @@
 
 			keyMap[keyCode] = false;
 		});
+
+
+		// End Controls ////////////////////////
 
 
 		// Sprite object for main character
@@ -99,11 +104,11 @@
     		// Test whether key is down and take appropriate action
     		// Left key
     		if (keyMap[200]) {
-    			charSprite.x = charSprite.x + -1;
+    			charSprite.x = charSprite.x + -spriteSpeed;
     		}
     		// Right key
     		if (keyMap[201]) {
-    			charSprite.x = charSprite.x + 1;
+    			charSprite.x = charSprite.x + spriteSpeed;
     		}
 
 
