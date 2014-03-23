@@ -12,6 +12,7 @@
     <!-- Script includes go here -->
     <script src="jslib/debug.js"></script>
     <script src="jslib/webgl/turbulenzengine.js"></script>
+    <script src="jslib/vmath.js"></script>
     <script src="jslib/webgl/graphicsdevice.js"></script>
     <script src="jslib/webgl/mathdevice.js"></script>
     <script src="jslib/webgl/sounddevice.js"></script>
@@ -19,7 +20,7 @@
     <script src="jslib/soundmanager.js"></script>
     <script src="jslib/observer.js"></script>
     <script src="jslib/requesthandler.js"></script>
-    <script src="jslib/vmath.js"></script>
+    
   </head>
   <body>
     <div id="gamediv"> <canvas id="canvas" width="1024px" height="768px">
@@ -83,48 +84,46 @@
     		graphicsDevice.endFrame();
 		}
                 
-               var soundDevice = TurbulenzEngine.getSoundDevice();
-               var mathDevice = TurbulenzEngine.createMathDevice({});
+    var soundDevice = TurbulenzEngine.getSoundDevice();
+    var mathDevice = TurbulenzEngine.createMathDevice({});
                
-        var requestHandler = RequestHandler.create({
-              initialRetryTime: 500,
-              notifyTime: 4000,
-              maxRetryTime: 8000,
-              onReconnected: function onReconnectedFn(reason, requestCallContext)
-              {
-                  console.log('Reconnected');
-              },
-              onRequestTimeout: function onRequestTimeoutFn(reason, requestCallContext)
-              {
-                  console.log('Connection lost');
-              }
-          });
-                var soundDeviceParameters = {
-                   linearDistance: false
-                };
-                var soundDevice = TurbulenzEngine.createSoundDevice(soundDeviceParameters);
-                var soundManager = SoundManager.create(soundDevice, requestHandler);
-                
-                var source = soundDevice.createSource({
-                    position : mathDevice.v3Build(0, 0, 0),
-                    direction : mathDevice.v3Build(1, 0, 0),
-                    velocity : mathDevice.v3Build(0, 0, 0),
-                    gain: 1.0,
-                    minDistance: 1.0,
-                    maxDistance: 100.0,
-                    rollOff: 1.0,
-                    relative: false,
-                    looping: false,
-                    pitch: 1.0
-                });
-                
-                
-                
-                soundManager.createSound('sounds/IrishSong.mp3', null, function() {
-                    alert('got here');
-                });
+    var requestHandler = RequestHandler.create({
+          initialRetryTime: 500,
+          notifyTime: 4000,
+          maxRetryTime: 8000,
+          onReconnected: function onReconnectedFn(reason, requestCallContext)
+          {
+              console.log('Reconnected');
+          },
+          onRequestTimeout: function onRequestTimeoutFn(reason, requestCallContext)
+          {
+              console.log('Connection lost');
+          }
+      });
 
-            //source.
+      var soundDeviceParameters = {
+         linearDistance: false
+      };
+
+      var soundDevice = TurbulenzEngine.createSoundDevice(soundDeviceParameters);
+      var soundManager = SoundManager.create(soundDevice, requestHandler);
+      
+      var source = soundDevice.createSource({
+          position : mathDevice.v3Build(0, 0, 0),
+          direction : mathDevice.v3Build(1, 0, 0),
+          velocity : mathDevice.v3Build(0, 0, 0),
+          gain: 1.0,
+          minDistance: 1.0,
+          maxDistance: 100.0,
+          rollOff: 1.0,
+          relative: false,
+          looping: false,
+          pitch: 1.0
+      });
+                
+      var mySound = soundManager.load('sounds/IrishSong.mp3', null, function(sound) {
+          source.play(sound);
+      });
                 
                 
 		TurbulenzEngine.setInterval(update, 1000 / 60);
