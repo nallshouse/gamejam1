@@ -26,7 +26,6 @@
         var canvasWidth = 1024;
         var canvasHeight = 768;
         var PI2 = Math.PI * 2;
-		var coinspeed = 2;
 
         TurbulenzEngine = WebGLTurbulenzEngine.create({
    			canvas: document.getElementById("canvas")
@@ -45,7 +44,7 @@
 		// Movement constants
 		var spriteSpeed = 8;
 		var gameSpeed = 60;
-
+		var coinspeed = 1;
 
 		// Controls //////////////////////////////
 
@@ -83,12 +82,12 @@
 		});
 		
 		// create coin objects
-		var coins = new Array();
-		for(var c = 0; c < 1 ; c++) {
+		var coins = new Array(10);
+		for(var c = 0; c < coins.length ; c++) {
 			coins[c] = Draw2DSprite.create({
 				width: 15,
 				height: 15,
-				x: graphicsDevice.width / 2,
+				x: Math.floor((Math.random()*graphicsDevice.width)+1),
 				y: graphicsDevice.top,
 				color: [1.0, 1.0, 1.0, 1.0],
 				rotation: 0
@@ -109,7 +108,7 @@
 		    }
 		});
 		
-		// single coin texture example
+		// Coin textures
 		var cointexture = graphicsDevice.createTexture({
 				src: "sdkassets/textures/coin.png",
 				mipmaps: true,
@@ -117,8 +116,10 @@
 				{
 					if (texture)
 					{
-						coins[0].setTexture(texture);
-						coins[0].setTextureRectangle([0, 0, texture.width, texture.height]);
+						for(var c = 0; c < coins.length; c++) {
+							coins[c].setTexture(texture);
+							coins[c].setTextureRectangle([0, 0, texture.width, texture.height]);
+						}
 					}
 				}
 			});
@@ -128,9 +129,17 @@
     		/* Update code goes here */
     		graphicsDevice.clear(bgColor, 1.0);
     		
+			// Move coins
+			for(var c = 0; c < coins.length; c++) {
+				coins[c].y = coins[c].y + coinspeed * Math.floor((Math.random()*3)+1);
+				if (coins[c].y > graphicsDevice.height) {
+					coins[c].y = 0;
+					}
+				}
+			// coins[0].y = coins[0].y + coinspeed;
+			
     		// Controls
     		// Test whether key is down and take appropriate action
-			coins[0].y = coins[0].y + coinspeed;
     		if (keyMap[keyCodes.LEFT]) {
     			charSprite.x = charSprite.x + -spriteSpeed;
     		}
@@ -142,7 +151,9 @@
     		/* Rendering code goes here */
 
 			draw2D.begin(); // Additive
-			draw2D.drawSprite(coins[0]);
+			for(var c = 0; c < coins.length; c++) {
+				draw2D.drawSprite(coins[c]);
+			}
 			draw2D.drawSprite(charSprite);
 			draw2D.end();
 
