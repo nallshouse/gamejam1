@@ -13,6 +13,7 @@
 	<script src="jslib/webgl/turbulenzengine.js"></script>
 	<script src="jslib/webgl/graphicsdevice.js"></script>
 	<script src="jslib/draw2d.js"></script>
+	<script src="jslib/webgl/inputdevice.js"></script>
 </head>
 <body>
 	<div id="gamediv">
@@ -36,11 +37,39 @@
 		  graphicsDevice: graphicsDevice
     	});
 
-
-
 		// Background color
 		var r = 0.5, g = 0.8, b = 0.8, a = 1.0;
 		var bgColor = [r, g, b, a];
+
+		// Movement constants
+		var spriteSpeed = 8;
+		var gameSpeed = 60;
+
+
+		// Controls //////////////////////////////
+
+		var keyMap = {};
+
+		var inputDeviceOptions = {};
+		var inputDevice = TurbulenzEngine.createInputDevice(inputDeviceOptions);
+		var keyCodes = inputDevice.keyCodes;
+
+		inputDevice.addEventListener('keydown', function(keyCode) {
+			//debug
+			console.log('KEYDOWN ' + keyCode);
+
+			keyMap[keyCode] = true;
+		});
+		inputDevice.addEventListener('keyup', function(keyCode) {
+			//debug
+			console.log('KEYUP ' + keyCode);
+
+			keyMap[keyCode] = false;
+		});
+
+
+		// End Controls ////////////////////////
+
 
 		// Sprite object for main character
 		var charSprite = Draw2DSprite.create({
@@ -70,6 +99,19 @@
 		function update() {
     		/* Update code goes here */
     		graphicsDevice.clear(bgColor, 1.0);
+    		
+    		// Controls
+    		// Test whether key is down and take appropriate action
+    		// Left key
+    		if (keyMap[200]) {
+    			charSprite.x = charSprite.x + -spriteSpeed;
+    		}
+    		// Right key
+    		if (keyMap[201]) {
+    			charSprite.x = charSprite.x + spriteSpeed;
+    		}
+
+
     		/* Rendering code goes here */
 
 			draw2D.begin(); // Additive
