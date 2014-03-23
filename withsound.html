@@ -1,0 +1,220 @@
+<html>
+<head>
+    <title>Turbulenz - Getting Started Guide - API Example</title>
+    <style>
+    	#gamediv {
+
+			text-align:		center;
+			vertical-align:	middle;
+		}
+    </style>
+    <!-- Script includes go here -->
+    <script src="jslib/debug.js"></script>
+    <script src="jslib/webgl/turbulenzengine.js"></script>
+    <script src="jslib/vmath.js"></script>
+    <script src="jslib/webgl/graphicsdevice.js"></script>
+    <script src="jslib/draw2d.js"></script>
+    <script src="jslib/webgl/inputdevice.js"></script>
+    <script src="jslib/webgl/mathdevice.js"></script>
+    <script src="jslib/webgl/sounddevice.js"></script>
+    
+    <script src="jslib/soundmanager.js"></script>
+    <script src="jslib/observer.js"></script>
+    <script src="jslib/requesthandler.js"></script>
+
+</head>
+<body>
+	<div id="gamediv">
+    	<canvas id="canvas" width="1024px" height="768px"/>
+    </div>
+    <script>
+        /* Game code goes here */
+
+        // Constants
+        var canvasWidth = 1024;
+        var canvasHeight = 768;
+        var PI2 = Math.PI * 2;
+
+        TurbulenzEngine = WebGLTurbulenzEngine.create({
+   			canvas: document.getElementById("canvas")
+		});
+
+		var graphicsDevice = TurbulenzEngine.createGraphicsDevice({});
+
+		var draw2D = Draw2D.create({
+		  graphicsDevice: graphicsDevice
+    	});
+
+		// Background color
+		var r = 0.5, g = 0.8, b = 0.8, a = 1.0;
+		var bgColor = [r, g, b, a];
+
+		// Movement constants
+		var spriteSpeed = 8;
+		var gameSpeed = 60;
+		var coinspeed = 1;
+
+		// Controls //////////////////////////////
+
+		var keyMap = {};
+
+		var inputDeviceOptions = {};
+		var inputDevice = TurbulenzEngine.createInputDevice(inputDeviceOptions);
+		var keyCodes = inputDevice.keyCodes;
+
+		inputDevice.addEventListener('keydown', function(keyCode) {
+			//debug
+			console.log('KEYDOWN ' + keyCode);
+
+			keyMap[keyCode] = true;
+		});
+		inputDevice.addEventListener('keyup', function(keyCode) {
+			//debug
+			console.log('KEYUP ' + keyCode);
+
+			keyMap[keyCode] = false;
+		});
+
+
+		// End Controls ////////////////////////
+
+		// Music ///////////////////////////////
+		var soundDevice = TurbulenzEngine.getSoundDevice();
+		var mathDevice = TurbulenzEngine.createMathDevice({});
+		           
+		var requestHandler = RequestHandler.create({
+		      initialRetryTime: 500,
+		      notifyTime: 4000,
+		      maxRetryTime: 8000,
+		      onReconnected: function onReconnectedFn(reason, requestCallContext)
+		      {
+		          console.log('Reconnected');
+		      },
+		      onRequestTimeout: function onRequestTimeoutFn(reason, requestCallContext)
+		      {
+		          console.log('Connection lost');
+		      }
+		  });
+
+		  var soundDeviceParameters = {
+		     linearDistance: false
+		  };
+
+		  var soundDevice = TurbulenzEngine.createSoundDevice(soundDeviceParameters);
+		  var soundManager = SoundManager.create(soundDevice, requestHandler);
+		  
+		  var source = soundDevice.createSource({
+		      position : mathDevice.v3Build(0, 0, 0),
+		      direction : mathDevice.v3Build(1, 0, 0),
+		      velocity : mathDevice.v3Build(0, 0, 0),
+		      gain: 1.0,
+		      minDistance: 1.0,
+		      maxDistance: 100.0,
+		      rollOff: 1.0,
+		      relative: false,
+		      looping: false,
+		      pitch: 1.0
+		  });
+		            
+		  var mySound = soundManager.load('sounds/IrishSong.mp3', null, function(sound) {
+		      source.play(sound);
+		  });
+
+		// End Music ///////////////////////////
+
+
+		// Sprite object for main character
+		var charSprite = Draw2DSprite.create({
+		    width: 100,
+		    height: 100,
+		    x: graphicsDevice.width / 2,
+		    y: graphicsDevice.height - 100,
+		    color: [1.0, 1.0, 1.0, 1.0],
+		    rotation: 0
+		});
+		
+		// create coin objects
+		var coins = new Array(10);
+		for(var c = 0; c < coins.length ; c++) {
+			coins[c] = Draw2DSprite.create({
+				width: 15,
+				height: 15,
+				x: Math.floor((Math.random()*graphicsDevice.width)+1),
+				y: graphicsDevice.top,
+				color: [1.0, 1.0, 1.0, 1.0],
+				rotation: 0
+			});
+		}
+
+		// Load texture for main character
+		var chartexture = graphicsDevice.createTexture({
+		    src: "sdkassets/textures/crate.jpg",
+		    mipmaps: true,
+		    onload: function (texture)
+		    {
+		        if (texture)
+		        {
+		            charSprite.setTexture(texture);
+		            charSprite.setTextureRectangle([0, 0, texture.width, texture.height]);
+		        }
+		    }
+		});
+		
+		// Coin textures
+		var cointexture = graphicsDevice.createTexture({
+				src: "sdkassets/textures/coin.png",
+				mipmaps: true,
+				onload: function (texture)
+				{
+					if (texture)
+					{
+						for(var c = 0; c < coins.length; c++) {
+							coins[c].setTexture(texture);
+							coins[c].setTextureRectangle([0, 0, texture.width, texture.height]);
+						}
+					}
+				}
+			});
+
+		// Main game loop
+		function update() {
+    		/* Update code goes here */
+    		graphicsDevice.clear(bgColor, 1.0);
+    		
+			// Move coins
+			for(var c = 0; c < coins.length; c++) {
+				coins[c].y = coins[c].y + coinspeed * Math.floor((Math.random()*3)+1);
+				if (coins[c].y > graphicsDevice.height) {
+					coins[c].y = 0;
+					}
+				}
+			// coins[0].y = coins[0].y + coinspeed;
+			
+    		// Controls
+    		// Test whether key is down and take appropriate action
+    		if (keyMap[keyCodes.LEFT]) {
+    			charSprite.x = charSprite.x + -spriteSpeed;
+    		}
+    		if (keyMap[keyCodes.RIGHT]) {
+    			charSprite.x = charSprite.x + spriteSpeed;
+    		}
+
+
+    		/* Rendering code goes here */
+
+			draw2D.begin(); // Additive
+			for(var c = 0; c < coins.length; c++) {
+				draw2D.drawSprite(coins[c]);
+			}
+			draw2D.drawSprite(charSprite);
+			draw2D.end();
+
+
+    		graphicsDevice.endFrame();
+		}
+
+		// Important
+		TurbulenzEngine.setInterval(update, 1000 / 60);
+    </script>
+</body>
+</html>
