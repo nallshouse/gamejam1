@@ -25,6 +25,7 @@
         var canvasWidth = 1024;
         var canvasHeight = 768;
         var PI2 = Math.PI * 2;
+		var coinspeed = 2;
 
 
         TurbulenzEngine = WebGLTurbulenzEngine.create({
@@ -51,23 +52,23 @@
 		});
 		
 		// single coin example
-		var coin = Draw2DSprite.create({
+		/* var coin = Draw2DSprite.create({
 				width: 15,
 				height: 15,
 				x: graphicsDevice.width / 2,
 				y: graphicsDevice.height - 700,
 				color: [1.0, 1.0, 1.0, 1.0],
 				rotation: 0
-			});
+			}); */
 
 		// create coin objects
 		var coins = new Array();
-		for(var c = 0; c < 10 ; c++) {
-			coins[c].Draw2DSprite.create({
+		for(var c = 0; c < 1 ; c++) {
+			coins[c] = Draw2DSprite.create({
 				width: 15,
 				height: 15,
 				x: graphicsDevice.width / 2,
-				y: graphicsDevice.height - 700,
+				y: graphicsDevice.top,
 				color: [1.0, 1.0, 1.0, 1.0],
 				rotation: 0
 			});
@@ -94,8 +95,8 @@
 				{
 					if (texture)
 					{
-						coins[c].setTexture(texture);
-						coins[c].setTextureRectangle([0, 0, texture.width, texture.height]);
+						coins[0].setTexture(texture);
+						coins[0].setTextureRectangle([0, 0, texture.width, texture.height]);
 					}
 				}
 			});
@@ -119,11 +120,13 @@
 		function update() {
     		/* Update code goes here */
     		graphicsDevice.clear(bgColor, 1.0);
+			coins[0].y = coins[0].y + coinspeed;
+			
     		/* Rendering code goes here */
 
 			draw2D.begin(); // Additive
 			draw2D.drawSprite(charSprite);
-			draw2D.drawSprite(coin);
+			draw2D.drawSprite(coins[0]);
 			draw2D.end();
 
 

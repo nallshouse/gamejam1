@@ -26,6 +26,7 @@
         var canvasWidth = 1024;
         var canvasHeight = 768;
         var PI2 = Math.PI * 2;
+		var coinspeed = 2;
 
         TurbulenzEngine = WebGLTurbulenzEngine.create({
    			canvas: document.getElementById("canvas")
@@ -80,6 +81,19 @@
 		    color: [1.0, 1.0, 1.0, 1.0],
 		    rotation: 0
 		});
+		
+		// create coin objects
+		var coins = new Array();
+		for(var c = 0; c < 1 ; c++) {
+			coins[c] = Draw2DSprite.create({
+				width: 15,
+				height: 15,
+				x: graphicsDevice.width / 2,
+				y: graphicsDevice.top,
+				color: [1.0, 1.0, 1.0, 1.0],
+				rotation: 0
+			});
+		}
 
 		// Load texture for main character
 		var chartexture = graphicsDevice.createTexture({
@@ -94,6 +108,20 @@
 		        }
 		    }
 		});
+		
+		// single coin texture example
+		var cointexture = graphicsDevice.createTexture({
+				src: "sdkassets/textures/coin.png",
+				mipmaps: true,
+				onload: function (texture)
+				{
+					if (texture)
+					{
+						coins[0].setTexture(texture);
+						coins[0].setTextureRectangle([0, 0, texture.width, texture.height]);
+					}
+				}
+			});
 
 		// Main game loop
 		function update() {
@@ -102,6 +130,7 @@
     		
     		// Controls
     		// Test whether key is down and take appropriate action
+			coins[0].y = coins[0].y + coinspeed;
     		if (keyMap[keyCodes.LEFT]) {
     			charSprite.x = charSprite.x + -spriteSpeed;
     		}
@@ -114,6 +143,7 @@
 
 			draw2D.begin(); // Additive
 			draw2D.drawSprite(charSprite);
+			draw2D.drawSprite(coins[0]);
 			draw2D.end();
 
 
